@@ -15,6 +15,8 @@ Set Lua package.path to include Lua application locations
 git clone https://github.com/mdiz/piDev.git
 info on git commands: https://www.linode.com/docs/development/version-control/how-to-install-git-and-clone-a-github-repository/
 git status (update of any changed files)
+git add . (add all changed files to staging area)
+git commit -m "Test files for test-repo-789 fork" (send files to git)
 git pull (to update a repository)
 git push (push local commits)
 
