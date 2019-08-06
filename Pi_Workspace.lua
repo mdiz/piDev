@@ -1,5 +1,5 @@
 --[[
-https://github.com/mdiz/piDev.git
+https://github.com/mdiz/piDev.git -- gitHub clone URL
 
 Recommended Settings for Windows For this book, the following environment variables are recommended on Windows systems: 
 
@@ -288,324 +288,32 @@ end
   os.execute("megaio 0 rwrite 8 off")
 end
 
-function fnOutput(num,state)
-  if state==1 then
-    os.execute("megaio 0 rwrite "..num.." on")
-  elseif state==0 then
-    os.execute("megaio 0 rwrite "..num.." off")
-  end
-end
+Push Files to git
+1. On your computer, move the file you'd like to upload to GitHub into the local directory that was created when you cloned the repository.
 
-fnOutput("8",1)
+2. Open Git Bash.
 
---megaio 0 rwrite 1 on
---megaio 0 rread 1
+3. Change the current working directory to your local repository.
 
---megaio 0 aread 1
+4. Stage the file for commit to your local repository.
 
-vTemp1=os.execute("megaio 0 aread 1")
-print(vTemp1)
+$ git add .
+# Adds the file to your local repository and stages it for commit. To unstage a file, use 'git reset HEAD YOUR-FILE'.
 
+5. Commit the file that you've staged in your local repository.
 
-local handle = io.popen(command)
-local result = handle:read("*a")
-handle:close()
+$ git commit -m "Add existing file"
+# Commits the tracked changes and prepares them to be pushed to a remote repository. To remove this commit and modify the file, use 'git reset --soft HEAD~1' and commit and add the file again.
 
+6. Push the changes in your local repository to GitHub.
 
-handle=io.popen(os.execute("megaio 0 aread 1"),"r")
-vTemp1 = handle:read("*a")
-handle:close()
-
-
-
-function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
-  if raw then return s end
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
-end
-
-vTemp1=os.capture(os.execute("megaio 0 aread 1"))
-
+$ git push origin your-branch
+# Pushes the changes in your local repository up to the remote repository you specified as
 --]]
 
-local function toFahrenheit(c)
-    return c * 9 / 5 + 32
-end
-
-VCC = 3.3   -- NodeMCU on board 3.3v vcc
---VCC = 5   -- NodeMCU on board 5v vcc
-R2 = 10000  -- 10k ohm series resistor
---adc_resolution = 1023 -- 10-bit adc
-adc_resolution = 4095 -- 12-bit adc
-
--- thermistor equation parameters
-A = 0.001129148 
-B = 0.000234125
-C = 8.76741*10^-8 
-
-function ln(x)      --natural logarithm function for x>0 real values
-    local y = (x-1)/(x+1)
-    local sum = 1 
-    local val = 1
-    if(x == nil) then
-        return 0
-    end
--- we are using limited iterations to acquire reliable accuracy.
--- here its upto 10000 and increased by 2
-    for i = 3, 10000, 2 do
-        val = val*(y*y)
-        sum = sum + (val/i)
-    end
-    return 2*y*sum
-end
-
---while true do
-    local Vout, Rth, temperature
-    --local adc_value = adc.read(0)
-    local adc_value=2013
-    Vout = (adc_value * VCC) / adc_resolution
-    Rth = (VCC * R2 / Vout) - R2
-    temperature = (1 / (A + (B * ln(Rth)) + (C * (ln(Rth))^3)))   -- Temperature in kelvin
-    temperature = temperature - 273.15  -- Temperature in degree celsius
-    temperatureF=toFahrenheit(temperature)
-    print(string.format("Temperature = %0.3g °C",temperature))
-    print(string.format("Temperature = %0.3g °F",temperatureF))
-    --tmr.delay(100000)
---end
--- 2030 = 78.4
--- 1990 = 77
--- 1900 = 74
--- 1300 = 53.4
--- 2055 = nothing attached
--- 2955 = 10k resistor only
--- 2955 = 5vdc only
--- 4095 = 3vdc only
-
---Vout = VCC * ADC_Value / ADC_Resolution
-Vout=((5*1990)/0.00122)
-print("Vout = "..Vout)
-
-
--- Calculate ADA Reading or Analog Voltage
---Resolution of the ADC / System Voltage = ADC Reading / Analog Voltage Measured
-
---Resolution of ADC / System Voltage * Analog Voltage Measured = ADC Reading
---System Voltage / Resolution of ADC * ADC Reading = Analog Voltage Measured
---3.3 / 4095 (.0008089) * 2055 = 1.66 vdc with nothing attached
-
-
---adcMax / adcVal = Vs / Vo 
---That is, the ratio of voltage divider input voltage to output voltage is the same as the ratio of the ADC full range 
---value (adcMax) to the value returned by the ADC (adcVal). If you are using a 10 bit ADC then adcMax is 1023.
-
-
---Ad = ADC Value
---Vo = ADC Voltage
---Vs = Source Voltage
---Rt = Thermister Resistance
---Ro = Reference Resistor Resistance
---Re = Resolution of ADC
-
--- 2047 ADC reading is 10k Thermistor Resistance
-Ad = 1880 -- Need to feed this from GPIO, ADC Value
---Vo = Calculated ADC Voltage
-Vs = 3.3 -- Static Source Voltage
---Rt = Calculated Thermister Resistance
-Ro = 10000 -- Static Reference Resistor Resistance
-Re = 4095 -- Static Resolution of ADC
-Vo=Vs/Re*Ad -- Calculated ADC Voltage
-Rt = Ro * (( Vs / Vo ) - 1)  -- Caculated Thermistor Resistance
---Tp = Calculated Temperature from Thermistor Table
-print("Resistance = "..Rt)
-
-Rt2 = Ro * ((Re / Ad) - 1) -- Calculate Thermistor Resistance if Vs and ADC Source Voltage the Same Then THis Works
-print("Resistance 2 = "..Rt2)
-
-do
-  local clock = os.clock
-  function sleep(n)  -- seconds
-    local t0 = clock()
-    while clock() - t0 <= n do end
-  end
-  while true do
-    os.execute("megaio 0 aread 1")
-    sleep(1)
-  end
-end
-
-tbThermistors={[237]=302,
-[265.1]=293,
-[297.2]=284,
-[334]=275,
-[376.4]=266,
-[425.3]=257,
-[481.8]=248,
-[547.3]=239,
-[623.6]=230,
-[712.6]=221,
-[816.8]=212,
-[939.3]=203,
-[1084]=194,
-[1255]=185,
-[1458]=176,
-[1700]=167,
-[1990]=158,
-[2339]=149,
-[2760]=140,
-[3271]=131,
-[3893]=122,
-[4655]=113,
-[5592]=104,
-[6752]=95,
-[8194]=86,
-[10000]=77,
-[12263]=68,
-[15130]=59,
-[18780]=50,
-[23457]=41,
-[29490]=32,
-[37313]=23,
-[47543]=14,
-[61020]=5,
-[78913]=-4,
-[102861]=-13,
-[135185]=-22,
-[179200]=-31,
-[239686]=-40,}
-
-
-do
-  local lvLower
-  for i,v in pairs(tbThermistors) do
-    if lvLower==nil then lvLower=i print("first lower = "..lvLower) end
-    if i<=lvLower then
-      lvLower=i
-    end
-  end
-  print("lowest value = "..lvLower)
-end
 
 
 
-
-
-
-
---Rt=333
---297.2
---334
---376.4
--- this works but needs cleaning up and add a scale between the numbers
--- ISSUE getting nil on return when Ad is higher number like 1860 but not at 2047
-function NearestValue(table, number)
-    local smallestSoFar, smallestIndex, nextLarger, nextLargerIndex,nextSmaller, nextSmallerIndex
-    for i, y in pairs(table) do -- Find the closest resistance to number
-        --if not smallestSoFar or (math.abs(number-i) < smallestSoFar) then
-        if not smallestSoFar or (math.abs(number-i) < smallestSoFar) then
-            smallestSoFar = math.abs(number-i)
-            smallestIndex = i
-        end
-    end
-    for i, y in pairs(table) do -- find the next larger resistance to number
-      --if not smallestSoFar or (math.abs(number-i) < smallestSoFar) then
-      if not nextLarger or (math.abs(smallestIndex-i) < nextLarger) and i>smallestIndex and i~=smallestIndex then
-          nextLarger = math.abs(smallestIndex-i)
-          nextLargerIndex = i
-      end
-    end
-    for i, y in pairs(table) do -- find the next smaller resistance to number
-      --if not smallestSoFar or (math.abs(number-i) < smallestSoFar) then
-      if not nextSmaller or (math.abs(smallestIndex-i) < nextSmaller) and i<smallestIndex and i~=smallestIndex then
-          nextSmaller = math.abs(smallestIndex-i)
-          nextSmallerIndex = i
-      end
-    end
-    -- decide what resistance values number is between
-    if number>=nextSmallerIndex and number<=smallestIndex then 
-      lowRange=nextSmallerIndex
-      HighRange=smallestIndex
-    elseif number>=smallestIndex and number<=nextLargerIndex then
-      lowRange=smallestIndex
-      HighRange=nextLargerIndex
-    end
-
-
-
-
-    return lowRange, HighRange, smallestIndex
-end
-
-nextSmaller, nextLarger, x = NearestValue(tbThermistors,Rt)
-
-print(nextSmaller)
-print(nextLarger)
-print(tbThermistors[x])
-
-
-function fnIO()
-  print("****Relay Outputs****")
-  os.execute("megaio 0 rread 1") -- Relay Output
-  os.execute("megaio 0 rread 2")
-  os.execute("megaio 0 rread 3")
-  os.execute("megaio 0 rread 4")
-  os.execute("megaio 0 rread 5")
-  os.execute("megaio 0 rread 6")
-  os.execute("megaio 0 rread 7")
-  os.execute("megaio 0 rread 8")
-
-  print("****ADC Inputs****") -- megaio <id> test-dac-adc <adcCh>
-  os.execute("megaio 0 aread 1") -- ADC Input
-  os.execute("megaio 0 aread 2")
-  os.execute("megaio 0 aread 3")
-  os.execute("megaio 0 aread 4")
-  os.execute("megaio 0 aread 5")
-  os.execute("megaio 0 aread 6")
-  os.execute("megaio 0 aread 7")
-  os.execute("megaio 0 aread 8")
-
-  print("****OPTO Inputs****") -- megaio <id> test-opto-oc <optoCh> <ocCh>
-  os.execute("megaio 0 optread 1") -- OPTO Input
-  os.execute("megaio 0 optread 2")
-  os.execute("megaio 0 optread 3")
-  os.execute("megaio 0 optread 4")
-  os.execute("megaio 0 optread 5")
-  os.execute("megaio 0 optread 6")
-  os.execute("megaio 0 optread 7")
-  os.execute("megaio 0 optread 8")
-
-  print("****Open Collector Outputs****")
-  os.execute("megaio 0 ocread 1") -- Open Collector Output
-  os.execute("megaio 0 ocread 2")
-  os.execute("megaio 0 ocread 3")
-  os.execute("megaio 0 ocread 4")
-
-  print("****IO Pin****") -- megaio <id> test-io <ch1> <ch2>
-  os.execute("megaio 0 iodread 1") -- IO Pin
-  os.execute("megaio 0 iodread 2")
-  os.execute("megaio 0 iodread 3")
-  os.execute("megaio 0 iodread 4")
-  os.execute("megaio 0 iodread 5")
-  os.execute("megaio 0 iodread 6")
-
-  print("****IO Pin****")
-  os.execute("megaio 0 ioread 1") -- IO Pin
-  os.execute("megaio 0 ioread 2")
-  os.execute("megaio 0 ioread 3")
-  os.execute("megaio 0 ioread 4")
-  os.execute("megaio 0 ioread 5")
-  os.execute("megaio 0 ioread 6")
-end
-
-
-
-megaio 0 ocwrite 1 on
-megaio <id> ocwrite <ch> <on/off; 1/0>
-os.execute("megaio 0 ocwrite 1 on")
 
 
 
@@ -650,3 +358,4 @@ os.execute("megaio 0 ocwrite 1 on")
          --megaio <id> test-opto-oc <optoCh> <ocCh>
          --megaio <id> test-io <ch1> <ch2>
          --megaio <id> test-dac-adc <adcCh>
+megaio 0 ocwrite 1 off
