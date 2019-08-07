@@ -309,53 +309,143 @@ $ git commit -m "Add existing file"
 
 $ git push origin your-branch
 # Pushes the changes in your local repository up to the remote repository you specified as
+
+megaio -v
+megaio -lt
+megaio -lw <val>
+megaio -lw <lednr> <val>
+megaio -warranty
+megaio -connector
+megaio <id> board
+
+megaio <id> rwrite <channel> <on/off>
+megaio <id> rread <channel>
+megaio <id> rread
+
+megaio <id> aread <channel>
+megaio <id> awrite <value>
+
+megaio <id> optread <channel>
+megaio <id> optread
+
+megaio <id> ocread
+megaio <id> ocwrite <ch> <on/off; 1/0>
+megaio <id> ocwrite <val>
+
+megaio <id> optirqset <channel> <rising/falling/change/none>
+megaio <id> optitRead
+
+megaio <id> iodwrite <channel> <in/out> -- For setting type of IO
+megaio <id> iodread <channel>
+megaio <id> iodread
+
+megaio <id> iowrite <channel> <on/off> -- For reading the IO
+megaio <id> ioread <channel>
+megaio <id> ioread
+
+megaio <id> ioirqset <channel> <rising/falling/change/none>
+megaio <id> ioitread
+
+--megaio <id> test
+megaio <id> atest <chNr>
+--megaio <id> test-opto-oc <optoCh> <ocCh>
+--megaio <id> test-io <ch1> <ch2>
+--megaio <id> test-dac-adc <adcCh>
+megaio 0 ocwrite 1 off
+
 --]]
 
 
+dofile("C:\\Users\\miked\\Dropbox (Voyant Solutions)\\XVS Development\\PiDev\\pkPiUtil.lua")
 
 
 
+dist = function(t1, t2)
+  return math.sqrt(((t1[1] - t2[1])^2) + ((t1[2] - t2[2])^2))
+end
 
 
-         megaio -v
-         megaio -lt
-         megaio -lw <val>
-         megaio -lw <lednr> <val>
-         megaio -warranty
-         megaio -connector
-         megaio <id> board
-        
-         megaio <id> rwrite <channel> <on/off>
-         megaio <id> rread <channel>
-         megaio <id> rread
-        
-         megaio <id> aread <channel>
-         megaio <id> awrite <value>
-        
-         megaio <id> optread <channel>
-         megaio <id> optread
-        
-         megaio <id> ocread
-         megaio <id> ocwrite <ch> <on/off; 1/0>
-         megaio <id> ocwrite <val>
-        
-         megaio <id> optirqset <channel> <rising/falling/change/none>
-         megaio <id> optitRead
-        
-         megaio <id> iodwrite <channel> <in/out> -- For setting type of IO
-         megaio <id> iodread <channel>
-         megaio <id> iodread
-        
-         megaio <id> iowrite <channel> <on/off> -- For reading the IO
-         megaio <id> ioread <channel>
-         megaio <id> ioread
-        
-         megaio <id> ioirqset <channel> <rising/falling/change/none>
-         megaio <id> ioitread
-        
-         --megaio <id> test
-         megaio <id> atest <chNr>
-         --megaio <id> test-opto-oc <optoCh> <ocCh>
-         --megaio <id> test-io <ch1> <ch2>
-         --megaio <id> test-dac-adc <adcCh>
-megaio 0 ocwrite 1 off
+local function fnThermLookup(table, adcResistance,steps)
+  --Calculate temp based resistance values.  Set steps to to balance between resolution and stability
+  --vSpaceTemp,vSpaceTempResistance=fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
+  local lvSmaller, lvResistanceNearest, lvTempNearest
+  for i,v in pairs(table) do -- Find the nearest resistance to adcResistance
+      if not lvSmaller or (math.abs(adcResistance-i)<lvSmaller) then
+          lvSmaller=math.abs(adcResistance-i)
+          lvResistanceNearest=i
+          lvTempNearest=v
+      end
+  end
+  local lvNextLarger, lvResistanceLarger
+  for i,v in pairs(table) do -- find the next larger resistance to adcResistance
+    if not lvNextLarger or (math.abs(lvResistanceNearest-i)<lvNextLarger) and i>lvResistanceNearest and i~=lvResistanceNearest then
+        lvNextLarger=math.abs(lvResistanceNearest-i)
+        lvResistanceLarger=i
+    end
+  end
+  local lvNextSmaller, lvResistanceSmaller
+  for i,v in pairs(table) do -- find the next smaller resistance to adcResistance
+    if not lvNextSmaller or (math.abs(lvResistanceNearest-i)<lvNextSmaller) and i<lvResistanceNearest and i~=lvResistanceNearest then
+        lvNextSmaller=math.abs(lvResistanceNearest-i)
+        lvResistanceSmaller=i
+    end
+  end
+  -- decide what resistance values adcResistance is between
+  local lvResistanceLow, lvResistanceHigh, lvTempLower, lvTempHigher
+  if adcResistance>=lvResistanceSmaller and adcResistance<=lvResistanceNearest then 
+    lvResistanceLow=lvResistanceSmaller
+    lvResistanceHigh=lvResistanceNearest
+    lvTempLow=table[lvResistanceHigh]
+    lvTempHigh=table[lvResistanceLow]
+  elseif adcResistance>=lvResistanceNearest and adcResistance<=lvResistanceLarger then
+    lvResistanceLow=lvResistanceNearest
+    lvResistanceHigh=lvResistanceLarger
+    lvTempLow=table[lvResistanceHigh]
+    lvTempHigh=table[lvResistanceLow]
+  end
+  -- Scale high and low resistance and temp to find temp within range of steps
+  local lvResistanceDiff, lvTempDiff, lvResistanceStep, lvTempStep
+  lvResistanceDiff=lvResistanceHigh-lvResistanceLow
+  lvResistanceStep=lvResistanceDiff/steps
+  lvTempDiff=lvTempLow-lvTempHigh
+  lvTempStep=lvTempDiff/steps
+  local tbRange={[lvResistanceHigh]=lvTempLow}
+  local lvCurrentResistance=lvResistanceHigh
+  local lvCurrentTemp=lvTempLow
+  for s=1, steps do
+    local i=lvCurrentResistance-lvResistanceStep
+    local v=lvCurrentTemp-lvTempStep
+    lvCurrentResistance=i
+    lvCurrentTemp=v
+    tbRange[i]=v
+  end
+  -- find nearest resistance to adcResistance within resistance subset table
+  local lvSmaller, lvResistanceNearest, lvTempNearest
+  for i,v in pairs(tbRange) do -- Find the nearest resistance to adcResistance
+      if not lvSmaller or (math.abs(adcResistance-i)<lvSmaller) then
+          lvSmaller=math.abs(adcResistance-i)
+          lvResistanceNearest=i
+          lvTempNearest=v
+      end
+  end
+  return lvTempNearest,lvResistanceNearest
+end
+
+vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(1934,3.3,10000,4095)
+vSpaceTemp,vSpaceTempResistance=fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
+
+
+print("vSpaceTemp = "..vSpaceTemp)
+print("vSpaceTempResistance = "..vSpaceTempResistance)
+
+--[[
+This is how to calculate the exact temperature
+
+--DiffR = Calculate difference between higher and lower resistance
+--Lookup temp for higher resistance and lower resistance
+--DiffT = Calculate difference between temperatures
+Res = Divide resistance into 20 steps
+Temp = Divide temp into 20 steps
+Add Res , Temp to a local table
+Use fnThermLookup to find nearest resistance from ADC and find on local table
+--]]
