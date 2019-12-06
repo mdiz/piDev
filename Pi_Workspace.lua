@@ -525,3 +525,9 @@ else
         tbAct["OpeningClosing alarm active"]=1
     end
 end
+
+
+var("vDoorAjarShutdownActive", "ME.BV205")
+Door Ajar Shutdown Delay
+Door Ajar Restart Delay
+Door Ajar Action (0 None, 1 Alarm Only, 2 Shutdown Only, 3 Alarm and Shutdown)
