@@ -359,81 +359,29 @@ megaio 0 ocwrite 1 off
 dofile("C:\\Users\\miked\\Dropbox (Voyant Solutions)\\XVS Development\\PiDev\\pkPiUtil.lua")
 
 
+--package.path="./?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/lib/lua/5.1/?.lua;/usr/local/lib/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua;/home/pi/Documents/?.lua;/home/pi/Documents/piDev/?.lua"
+--require("pkPiUtil")
 
-dist = function(t1, t2)
-  return math.sqrt(((t1[1] - t2[1])^2) + ((t1[2] - t2[2])^2))
+function os.capture(cmd, raw)
+  local f = assert(io.popen(cmd, 'r'))
+  local s = assert(f:read('*a'))
+  f:close()
+  if raw then return s end
+  s = string.gsub(s, '^%s+', '')
+  s = string.gsub(s, '%s+$', '')
+  s = string.gsub(s, '[\n\r]+', ' ')
+  return s
 end
 
 
-local function fnThermLookup(table, adcResistance,steps)
-  --Calculate temp based resistance values.  Set steps to to balance between resolution and stability
-  --vSpaceTemp,vSpaceTempResistance=fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
-  local lvSmaller, lvResistanceNearest, lvTempNearest
-  for i,v in pairs(table) do -- Find the nearest resistance to adcResistance
-      if not lvSmaller or (math.abs(adcResistance-i)<lvSmaller) then
-          lvSmaller=math.abs(adcResistance-i)
-          lvResistanceNearest=i
-          lvTempNearest=v
-      end
-  end
-  local lvNextLarger, lvResistanceLarger
-  for i,v in pairs(table) do -- find the next larger resistance to adcResistance
-    if not lvNextLarger or (math.abs(lvResistanceNearest-i)<lvNextLarger) and i>lvResistanceNearest and i~=lvResistanceNearest then
-        lvNextLarger=math.abs(lvResistanceNearest-i)
-        lvResistanceLarger=i
-    end
-  end
-  local lvNextSmaller, lvResistanceSmaller
-  for i,v in pairs(table) do -- find the next smaller resistance to adcResistance
-    if not lvNextSmaller or (math.abs(lvResistanceNearest-i)<lvNextSmaller) and i<lvResistanceNearest and i~=lvResistanceNearest then
-        lvNextSmaller=math.abs(lvResistanceNearest-i)
-        lvResistanceSmaller=i
-    end
-  end
-  -- decide what resistance values adcResistance is between
-  local lvResistanceLow, lvResistanceHigh, lvTempLower, lvTempHigher
-  if adcResistance>=lvResistanceSmaller and adcResistance<=lvResistanceNearest then 
-    lvResistanceLow=lvResistanceSmaller
-    lvResistanceHigh=lvResistanceNearest
-    lvTempLow=table[lvResistanceHigh]
-    lvTempHigh=table[lvResistanceLow]
-  elseif adcResistance>=lvResistanceNearest and adcResistance<=lvResistanceLarger then
-    lvResistanceLow=lvResistanceNearest
-    lvResistanceHigh=lvResistanceLarger
-    lvTempLow=table[lvResistanceHigh]
-    lvTempHigh=table[lvResistanceLow]
-  end
-  -- Scale high and low resistance and temp to find temp within range of steps
-  local lvResistanceDiff, lvTempDiff, lvResistanceStep, lvTempStep
-  lvResistanceDiff=lvResistanceHigh-lvResistanceLow
-  lvResistanceStep=lvResistanceDiff/steps
-  lvTempDiff=lvTempLow-lvTempHigh
-  lvTempStep=lvTempDiff/steps
-  local tbRange={[lvResistanceHigh]=lvTempLow}
-  local lvCurrentResistance=lvResistanceHigh
-  local lvCurrentTemp=lvTempLow
-  for s=1, steps do
-    local i=lvCurrentResistance-lvResistanceStep
-    local v=lvCurrentTemp-lvTempStep
-    lvCurrentResistance=i
-    lvCurrentTemp=v
-    tbRange[i]=v
-  end
-  -- find nearest resistance to adcResistance within resistance subset table
-  local lvSmaller, lvResistanceNearest, lvTempNearest
-  for i,v in pairs(tbRange) do -- Find the nearest resistance to adcResistance
-      if not lvSmaller or (math.abs(adcResistance-i)<lvSmaller) then
-          lvSmaller=math.abs(adcResistance-i)
-          lvResistanceNearest=i
-          lvTempNearest=v
-      end
-  end
-  return lvTempNearest,lvResistanceNearest
-end
 
-vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(1934,3.3,10000,4095)
-vSpaceTemp,vSpaceTempResistance=fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
+--************************2295 CAUSES ERROR!!!!!!!
+vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(2018,3.3,10000,4095)
+vSpaceTemp,vSpaceTempResistance=pkPiUtil.fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
 
+
+print("vAdcResistance = "..vAdcResistance)
+print("vAdcVoltage = "..vAdcVoltage)
 
 print("vSpaceTemp = "..vSpaceTemp)
 print("vSpaceTempResistance = "..vSpaceTempResistance)
@@ -448,4 +396,132 @@ Res = Divide resistance into 20 steps
 Temp = Divide temp into 20 steps
 Add Res , Temp to a local table
 Use fnThermLookup to find nearest resistance from ADC and find on local table
+
+
+megaio 0 rwrite 1 off
+megaio 0 rwrite 2 off
+megaio 0 rwrite 3 off
+megaio 0 rwrite 4 off
+megaio 0 rwrite 5 off
+megaio 0 rwrite 6 off
+megaio 0 rwrite 7 off
+megaio 0 rwrite 8 off
+
+megaio 0 iodread 1
+megaio 0 iodread 2
+megaio 0 iodread 3
+megaio 0 iodread 4
+megaio 0 iodread 5
+megaio 0 iodread 6
+
+megaio 0 iodwrite 1 out
+megaio 0 iodwrite 2 out
+megaio 0 iodwrite 3 out
+megaio 0 iodwrite 4 out
+megaio 0 iodwrite 5 out
+megaio 0 iodwrite 6 out
+
+megaio 0 iowrite 1 on
+megaio 0 iowrite 2 on
+megaio 0 iowrite 3 on
+megaio 0 iowrite 4 on
+megaio 0 iowrite 5 on
+megaio 0 iowrite 6 on
+
+megaio 0 ioread 1
+megaio 0 ioread 2
+megaio 0 ioread 3
+megaio 0 ioread 4
+megaio 0 ioread 5
+megaio 0 ioread 6
+
+
 --]]
+
+function fnSleep(n)  -- seconds
+  local clock = os.clock  
+  local t0 = clock()
+  while clock() - t0 <= n do end
+end
+function fnFlash(io,s,t)
+  for x=1,t do
+    os.execute("megaio 0 iowrite "..io.." on")
+    fnSleep(s)
+    os.execute("megaio 0 iowrite "..io.." off")
+    fnSleep(s)
+  end
+end
+
+
+
+
+
+
+--var("iDiningLightStatus", "ME.AI4")
+--vScheduleState == 1 or vScheduleState == 2 or vScheduleState == 3 then 
+
+--Questions for Meeting
+--is this an alarm, error, status?
+  -- Alarm = schedule <> status > timeDelay
+  -- Error = report the ammount of time schedule <> status
+  -- Status = schedule <> status
+
+-- I believe what we're looking for are times greater than X where lights off and schedule on.
+  -- just report when schedule <> status.  Analitics/Customer decides on X
+
+-- The alarm code can hide times where the lights are turned on for a brief time and back off.
+
+
+--it's an error if lights are off and schedule is occ.  Is it also an error if lights are on and schedule is not occ?
+
+--Deleted Points
+--var("iOutsideLightLevel", "ME.AI4")
+--var("vSensorFailOutsideLightLevel", "ME.BV123")
+
+--New Points
+--iDiningLightStatus
+--vAlarmOpeningClosingDelay
+--vAlarmOpeningClosing
+
+
+--\XVS Development\MC v45 Release\Upgrade Packages\8-9-2019 MC Upgrade Package.txt
+
+--Delete Light Level Objects
+fnDeleteObjects(4, 4, 4, "AI") -- Delete iOutsideLightLevel 
+ME.BV123_Object_Name.value="Analog Value 123"
+ME.BV123_Description.value=""   
+ME.BV123_Present_Value.value=0 --vSensorFailOutsideLightLevel   
+
+--Dining Light Status Objects
+var("iDiningLightStatus", "ME.BI4")
+var("vAlarmOpeningClosing", "ME.BV132")
+var("vAlarmOpeningClosingDelay", "ME.AV134")
+
+fnCreateObject(129,"BI",4,_,95,_,_,"iDiningLightStatus","Dining Lights Status")
+fnCreateObject(129,"BV",132,_,95,_,_,"vAlarmOpeningClosing","Opening Closing Alarm")
+fnCreateObject(129,"AV",134,_,95,_,_,"vAlarmOpeningClosingDelay","OpeningClosing Alarm Delay")
+ME.AV134_Present_Value.value = 0 -- vAlarmOpeningClosing
+ME.AV134_Present_Value.value = 5 -- vAlarmOpeningClosingDelay
+
+{PointName = "BI4", Heartbeat = 360, Throttle = 1, ChangeDelta = 0.5, Critical = 1},
+{PointName = "BV132", Heartbeat = 360, Throttle = 1, ChangeDelta = 0.5, Critical = 1},
+
+-- Verify new points
+print(ME.BI4_Present_Value.value)
+
+
+-- New Alarm Code
+if tbTimers.AlarmOpeningClosing == nil then
+    tbTimers.AlarmOpeningClosing = gvOSAdjustedTime
+else
+  if iDiningLightStatus==1 and vScheduleState==2 then
+    tbTimers.AlarmOpeningClosing = gvOSAdjustedTime
+    if stable.vAlarmOpeningClosing() > 900 then
+      vAlarmOpeningClosing = 0
+      tbAct["OpeningClosing alarm inactive"]=1
+    end
+  elseif ((gvOSAdjustedTime - tbTimers.AlarmOpeningClosing) / 60) >= vAlarmOpeningClosingDelay then
+        vAlarmOpeningClosing = 1
+        tbAct["OpeningClosing alarm active"]=1
+    end
+end

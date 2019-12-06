@@ -22,6 +22,9 @@ local function fnADCcalc(Ad,Vs,Ro,Re)
   return Rt,Vo
 end
 local function fnThermLookup(table, adcResistance,steps)
+  --************************2295 CAUSES ERROR!!!!!!!*************************************************************
+  --*************************************************************************************************************
+  --*************************************************************************************************************
   --Calculate temp based resistance values.  Set steps to to balance between resolution and stability
   --vSpaceTemp,vSpaceTempResistance=fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
   local lvSmaller, lvResistanceNearest, lvTempNearest
