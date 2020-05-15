@@ -358,7 +358,7 @@ megaio 0 ocwrite 1 off
 
 dofile("C:\\Users\\miked\\Dropbox (Voyant Solutions)\\XVS Development\\PiDev\\pkPiUtil.lua")
 
-
+-- Pi path for lua
 --package.path="./?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/lib/lua/5.1/?.lua;/usr/local/lib/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua;/home/pi/Documents/?.lua;/home/pi/Documents/piDev/?.lua"
 --require("pkPiUtil")
 
