@@ -83,7 +83,7 @@ popen function: 217C3480
 --]]
 
 
--- Need this in a function to create appklpkcation object tables.  Should all the application tables be one table? YES
+-- Need this in a function to create application object tables.  Should all the application tables be one table? YES
 -- Review master object table to decide how to use SYSTEM and HARDWARE objects
 -- Add fields to identify the application (ARC1, ARC2...). This could be done by adding (ARC1, ARC2 to the table name) (tbAV24 is now ARC1_V24)
 --dofile("pkUtil.lua")
@@ -454,77 +454,6 @@ end
 
 
 
-
-
-
---var("iDiningLightStatus", "ME.AI4")
---vScheduleState == 1 or vScheduleState == 2 or vScheduleState == 3 then 
-
---Questions for Meeting
---is this an alarm, error, status?
-  -- Alarm = schedule <> status > timeDelay
-  -- Error = report the ammount of time schedule <> status
-  -- Status = schedule <> status
-
--- I believe what we're looking for are times greater than X where lights off and schedule on.
-  -- just report when schedule <> status.  Analitics/Customer decides on X
-
--- The alarm code can hide times where the lights are turned on for a brief time and back off.
-
-
---it's an error if lights are off and schedule is occ.  Is it also an error if lights are on and schedule is not occ?
-
---Deleted Points
---var("iOutsideLightLevel", "ME.AI4")
---var("vSensorFailOutsideLightLevel", "ME.BV123")
-
---New Points
---iDiningLightStatus
---vAlarmOpeningClosingDelay
---vAlarmOpeningClosing
-
-
---\XVS Development\MC v45 Release\Upgrade Packages\8-9-2019 MC Upgrade Package.txt
-
---Delete Light Level Objects
-fnDeleteObjects(4, 4, 4, "AI") -- Delete iOutsideLightLevel 
-ME.BV123_Object_Name.value="Analog Value 123"
-ME.BV123_Description.value=""   
-ME.BV123_Present_Value.value=0 --vSensorFailOutsideLightLevel   
-
---Dining Light Status Objects
-var("iDiningLightStatus", "ME.BI4")
-var("vAlarmOpeningClosing", "ME.BV132")
-var("vAlarmOpeningClosingDelay", "ME.AV134")
-
-fnCreateObject(129,"BI",4,_,95,_,_,"iDiningLightStatus","Dining Lights Status")
-fnCreateObject(129,"BV",132,_,95,_,_,"vAlarmOpeningClosing","Opening Closing Alarm")
-fnCreateObject(129,"AV",134,_,95,_,_,"vAlarmOpeningClosingDelay","OpeningClosing Alarm Delay")
-ME.AV134_Present_Value.value = 0 -- vAlarmOpeningClosing
-ME.AV134_Present_Value.value = 5 -- vAlarmOpeningClosingDelay
-
-{PointName = "BI4", Heartbeat = 360, Throttle = 1, ChangeDelta = 0.5, Critical = 1},
-{PointName = "BV132", Heartbeat = 360, Throttle = 1, ChangeDelta = 0.5, Critical = 1},
-
--- Verify new points
-print(ME.BI4_Present_Value.value)
-
-
--- New Alarm Code
-if tbTimers.AlarmOpeningClosing == nil then
-    tbTimers.AlarmOpeningClosing = gvOSAdjustedTime
-else
-  if iDiningLightStatus==1 and vScheduleState==2 then
-    tbTimers.AlarmOpeningClosing = gvOSAdjustedTime
-    if stable.vAlarmOpeningClosing() > 900 then
-      vAlarmOpeningClosing = 0
-      tbAct["OpeningClosing alarm inactive"]=1
-    end
-  elseif ((gvOSAdjustedTime - tbTimers.AlarmOpeningClosing) / 60) >= vAlarmOpeningClosingDelay then
-        vAlarmOpeningClosing = 1
-        tbAct["OpeningClosing alarm active"]=1
-    end
-end
 
 
 
