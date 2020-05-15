@@ -39,6 +39,7 @@ Pimoroni’s $37 Automation HAT.
 RPi Zero sized RasPiO Analog Zero board.
 
 Next Steps:
+Work out how to access Pi IO from Lua.  Likely need Python interface
 Create Lua code repository dir where all DGP files will reside
 Create IO table
 Create functions to read/write IO to/from IO table

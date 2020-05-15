@@ -2,6 +2,7 @@ local version="1.0"
 local releaseDate="8-6-2019"
 local readme="8-6-2019 1.0 Origional PiCalc release"
 local function fnADCcalc(Ad,Vs,Ro,Re)
+  --************************2295-2337 CAUSES ERROR!!!!!!!
   --fnThermResistance(1880,3.3,10000,4095)
   --Calculate ADA Reading or Analog Voltage
   --Resolution of the ADC / System Voltage = ADC Reading / Analog Voltage Measured

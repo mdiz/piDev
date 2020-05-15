@@ -375,8 +375,8 @@ end
 
 
 
---************************2295 CAUSES ERROR!!!!!!!
-vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(2018,3.3,10000,4095)
+--************************2267,2295-2337 CAUSES ERROR!!!!!!!
+vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(2103,3.3,10000,4095)
 vSpaceTemp,vSpaceTempResistance=pkPiUtil.fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
 
 
@@ -457,3 +457,5 @@ end
 
 
 
+  --os.execute("megaio 0 aread 1")  os.execute("megaio 0 aread 2")  os.execute("megaio 0 aread 3")  os.execute("megaio 0 aread 4")  os.execute("megaio 0 aread 5")  os.execute("megaio 0 aread 6")  os.execute("megaio 0 aread 7")  os.execute("megaio 0 aread 8")
+--os.execute("megaio 0 iowrite 3 on")
