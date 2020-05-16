@@ -38,10 +38,25 @@ http://linuxgizmos.com/17-raspberry-pi-hat-features-8-channel-adc/
 Pimoroni’s $37 Automation HAT. 
 RPi Zero sized RasPiO Analog Zero board.
 
+Irrigation Pump Controller Project
+Project to develop Pi controller for XVS
+
+Inputs (3 voltage, 4 temp, 2 digital)
+	Pump Discharge Pressure
+	Manifold Pressure
+	Pump Amps
+	Pump Temp
+	Pump House Temp
+	12" Ground Temp
+	Water Leak
+Outputs
+	Pump Enable
+	Heater Enable
+	Alarm Status / System Ready Lights
+
 Next Steps:
 Work out how to access Pi IO from Lua.  Likely need Python interface
 Create Lua code repository dir where all DGP files will reside
 Create IO table
 Create functions to read/write IO to/from IO table
 Create a table for advValue=Temp with 10k-3.  Use resistance functions as tools to build it
-
