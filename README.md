@@ -40,7 +40,7 @@ RPi Zero sized RasPiO Analog Zero board.
 
 Irrigation Pump Controller Project
 Project to develop Pi controller for XVS
-
+It's PFC code on a Pi
 Inputs (3 voltage, 4 temp, 2 digital)
 	Pump Discharge Pressure
 	Manifold Pressure
@@ -49,10 +49,20 @@ Inputs (3 voltage, 4 temp, 2 digital)
 	Pump House Temp
 	12" Ground Temp
 	Water Leak
+	Ready to Start Button (latching relay)
 Outputs
 	Pump Enable
 	Heater Enable
 	Alarm Status / System Ready Lights
+Parts Needed
+	Pi
+	8 Channel ADC - https://www.digikey.com/en/maker/search-results?&k=MCP3008 10 bit 8 channel
+Parts I Have
+	https://www.adeept.com/adeept-new-ultimate-starter-learning-kit-for-raspberry-pi-3-2-model-b-b-python-adxl345-gpio-cable-dc-motor_p0035.html
+	ADC ADC0832CCN Texas Instruments 8-bit 2-Channel https://www.ti.com/store/ti/en/p/product/?p=ADC0832CCN/NOPB
+	ULN2003APG 7-ch Darlington Sink Driver
+	ADXL345 3-axis accelerometer 
+	Mega-io C:/Users/miked/Downloads/MEGA-IO-UsersGuide%20(5).pdf
 
 Next Steps:
 Work out how to access Pi IO from Lua.  Likely need Python interface

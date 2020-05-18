@@ -376,7 +376,7 @@ end
 
 
 --************************2267,2295-2337 CAUSES ERROR!!!!!!!
-vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(2103,3.3,10000,4095)
+vAdcResistance,vAdcVoltage=pkPiUtil.fnADCcalc(2033,3.3,10000,4095)
 vSpaceTemp,vSpaceTempResistance=pkPiUtil.fnThermLookup(pkPiUtil.tb10KType2, vAdcResistance,40)
 
 
@@ -454,8 +454,14 @@ end
 
 
 
+--To tell the chip what to do, and to read back the results, we’ll use the SPI interface. This only uses a few of the pins
+-- of the P1 connector, and are readily available. We’ll need a clock signal (SCLK) to send/receive the data and control 
+-- information. We’ll need the data and control input and output pins (MOSI and MISO), and we need a way to select the 
+-- proper device, because the Pi can accommodate two SPI devices. We’ll use the CE0 pin for that purpose.
 
 
-
+--ls -l /dev/spi*
+--sudo nano /boot/config.txt 
+--sudo nano megaio-rpi/README.md
   --os.execute("megaio 0 aread 1")  os.execute("megaio 0 aread 2")  os.execute("megaio 0 aread 3")  os.execute("megaio 0 aread 4")  os.execute("megaio 0 aread 5")  os.execute("megaio 0 aread 6")  os.execute("megaio 0 aread 7")  os.execute("megaio 0 aread 8")
 --os.execute("megaio 0 iowrite 3 on")
