@@ -30,10 +30,10 @@ ADC_DIO = 13
 
 # using default pins for backwards compatibility
 def setup(cs=11,clk=12,dio=13):
-        global ADC_CS, ADC_CLK, ADC_DIO
-        ADC_CS=cs
-        ADC_CLK=clk
-        ADC_DIO=dio
+    global ADC_CS, ADC_CLK, ADC_DIO
+    ADC_CS=cs
+    ADC_CLK=clk
+    ADC_DIO=dio
 	GPIO.setwarnings(False)
 	GPIO.setmode(GPIO.BOARD)    		# Number GPIOs by its physical location
 	GPIO.setup(ADC_CS, GPIO.OUT)		# Set pins' mode is output
