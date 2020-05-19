@@ -15,8 +15,8 @@ def loop():
 		GPIO.output(LedPin, GPIO.HIGH) # led off
 		time.sleep(0.5)
 def destroy():
-			GPIO.output(LedPin, GPIO.HIGH) # led off
-			GPIO.cleanup() # Release resource
+	GPIO.output(LedPin, GPIO.HIGH) # led off
+	GPIO.cleanup() # Release resource
 if __name__ == '__main__': # Program start from here
 	setup()
 try:
