@@ -1,8 +1,14 @@
 #!/usr/bin/env python
+
+#5/19/20
+# Lesson Completed
+# Code print command corrected
+# Found that pin 6 GRD is not making good connection
+
 import RPi.GPIO as GPIO
 import time
 
-BeepPin = 11    # pin11
+BeepPin = 12    # pin12
 
 def setup():
 	GPIO.setmode(GPIO.BOARD)        # Numbers pins by physical location
@@ -23,8 +29,7 @@ def destroy():
 if __name__ == '__main__':     # Program start from here
 	print('Press Ctrl+C to end the program...')
 	setup()
-	try:
-		loop()
-	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-		destroy()
-
+try:
+	loop()
+except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
+	destroy()
