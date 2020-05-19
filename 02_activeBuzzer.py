@@ -2,7 +2,7 @@
 import RPi.GPIO as GPIO
 import time
 
-BeepPin = 12    # pin11
+BeepPin = 11    # pin11
 
 def setup():
 	GPIO.setmode(GPIO.BOARD)        # Numbers pins by physical location
@@ -23,8 +23,8 @@ def destroy():
 if __name__ == '__main__':     # Program start from here
 	print('Press Ctrl+C to end the program...')
 	setup()
-	try:
-		loop()
-	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-		destroy()
+try:
+	loop()
+except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
+	destroy()
 
