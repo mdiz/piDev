@@ -25,8 +25,8 @@ def destroy():
 
 if __name__ == '__main__':     # Program start from here
 	setup()
-	try:
-		loop()
-	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
-		destroy()
+try:
+	loop()
+except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
+	destroy()
 
